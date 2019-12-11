@@ -7,6 +7,7 @@ namespace MVC_Test.windows.secondaryWindow.thirdPage {
 	/// Логика взаимодействия для ThirdPage.xaml
 	/// </summary>
 	public partial class ThirdPage : BasePage {
+		private ThirdPageController Controller => BaseController as ThirdPageController;
 		private ISecondaryWindow Window => _window as ISecondaryWindow;
 
 		public ThirdPage(IBaseWindow window) : base(window) {
