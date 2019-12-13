@@ -6,7 +6,8 @@
                        xmlns:local="clr-namespace:MVC_Test"
                        xmlns:basePage="clr-namespace:MVC_Test.windows.basePage"
                        mc:Ignorable="d"
-                       Title="SecondPage" Height="450" Width="800">
+                       Title="SecondPage" Height="450" Width="800"
+                       Loaded="SecondPage_OnLoaded">
     <Grid>
         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32">2</TextBlock>
     </Grid>

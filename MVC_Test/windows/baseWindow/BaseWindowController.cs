@@ -24,7 +24,9 @@ namespace MVC_Test.windows.baseWindow {
 			foreach (var fieldInfo in GetInstance()
 															.GetType()
 															.GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
-															.Where(info => info.Name.EndsWith("PageController"))) {
+															.Where(info => info.FieldType.BaseType == typeof(BasePageController))
+															.Where(info => info.Name.EndsWith("PageController")))
+			{
 				fieldInfo.SetValue(GetInstance(),
 													ControllerList.Find(controller =>
 																								fieldInfo.Name.Contains(controller.GetType().Name,
