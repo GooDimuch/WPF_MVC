@@ -1,14 +1,16 @@
 ﻿<basePage:BasePage x:Class="MVC_Test.windows.mainWindow.firstPage.FirstPage"
-                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                       xmlns:local="clr-namespace:MVC_Test"
-                       xmlns:basePage="clr-namespace:MVC_Test.windows.basePage"
-                       mc:Ignorable="d"
-                       Title="FirstPage" Height="450" Width="800"
-                       Loaded="FirstPage_OnLoaded">
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:local="clr-namespace:MVC_Test"
+                   xmlns:basePage="clr-namespace:MVC_Test.windows.basePage"
+                   xmlns:dbwc="clr-namespace:MVC_Test.customViews.dropBoxWithCategories"
+                   mc:Ignorable="d"
+                   Title="FirstPage" Height="450" Width="800"
+                   Loaded="FirstPage_OnLoaded">
     <Grid>
         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32">1</TextBlock>
+        <dbwc:DropBoxWithCategories Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" />
     </Grid>
 </basePage:BasePage>

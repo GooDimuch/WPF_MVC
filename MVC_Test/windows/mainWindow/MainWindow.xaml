@@ -129,12 +129,12 @@
             <Grid>
                 <StackPanel Orientation="Horizontal" FlowDirection="LeftToRight"
                             HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Button Style="{StaticResource BPlus}" Click="Plus_OnClick" />
+                    <Button Style="{StaticResource BPlus}" Background="#cccccc" Click="Plus_OnClick" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft"
                             HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <Button Style="{StaticResource BRefresh}" Click="Close_OnClick" />
-                    <Button Style="{StaticResource BMinus}" Click="Minus_OnClick" />
+                    <Button Style="{StaticResource BRefresh}" Background="#cccccc" Click="Close_OnClick" />
+                    <Button Style="{StaticResource BMinus}" Background="#cccccc" Click="Minus_OnClick" />
                 </StackPanel>
 
                 <TextBlock Name="TbHeader" Foreground="White"
