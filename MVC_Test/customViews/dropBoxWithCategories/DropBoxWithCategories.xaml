@@ -6,7 +6,7 @@
              xmlns:dropBoxWithCategories="clr-namespace:MVC_Test.customViews.dropBoxWithCategories"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
-             MinHeight="20" MinWidth="80">
+             MinHeight="20" MinWidth="80" Loaded="DropBoxWithCategories_OnLoaded">
 
     <UserControl.Resources>
 
@@ -186,7 +186,7 @@
         <dropBoxWithCategories:BackgroundItemConverter x:Key="BackgroundItemConverter" />
         <!-- SimpleStyles: ComboBoxItem -->
         <Style TargetType="{x:Type ComboBoxItem}">
-            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="EventSetter_OnHandler" />
+            <EventSetter Event="PreviewMouseDown" Handler="EventSetter_OnHandler" />
             <Setter Property="SnapsToDevicePixels" Value="true" />
             <Setter Property="Foreground" Value="{StaticResource FontBrush}" />
             <Setter Property="OverridesDefaultStyle" Value="true" />
