@@ -89,8 +89,6 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-        <dropBoxWithCategories:HntVisibleConverter x:Key="MyConverter" />
-
         <Style TargetType="{x:Type ComboBox}">
             <Setter Property="SnapsToDevicePixels" Value="true" />
             <Setter Property="OverridesDefaultStyle" Value="true" />
@@ -123,14 +121,6 @@
                                         <Setter Property="Margin" Value="3,3,23,3" />
                                         <Setter Property="HorizontalAlignment" Value="Left" />
                                         <Setter Property="VerticalAlignment" Value="Center" />
-                                        <Setter Property="Visibility">
-                                            <Setter.Value>
-                                                <MultiBinding Converter="{StaticResource MyConverter}">
-                                                    <Binding ElementName="ToggleButton" Path="IsChecked" />
-                                                    <Binding ElementName="ContentSite" Path="Content" />
-                                                </MultiBinding>
-                                            </Setter.Value>
-                                        </Setter>
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
@@ -183,13 +173,11 @@
             </Setter>
         </Style>
 
-        <dropBoxWithCategories:BackgroundItemConverter x:Key="BackgroundItemConverter" />
         <!-- SimpleStyles: ComboBoxItem -->
         <Style TargetType="{x:Type ComboBoxItem}">
             <EventSetter Event="PreviewMouseDown" Handler="EventSetter_OnHandler" />
             <Setter Property="SnapsToDevicePixels" Value="true" />
             <Setter Property="Foreground" Value="{StaticResource FontBrush}" />
-            <Setter Property="OverridesDefaultStyle" Value="true" />
             <Setter Property="Margin" Value="1" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -201,7 +189,7 @@
                             <ContentPresenter>
                                 <ContentPresenter.Resources>
                                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource NormalTextBlock}">
-                                        <Setter Property="Text" Value="{Binding Path=Title}"></Setter>
+                                        <Setter Property="Text" Value="{Binding Path=Title}" />
                                     </Style>
                                 </ContentPresenter.Resources>
                             </ContentPresenter>
@@ -223,4 +211,5 @@
     </UserControl.Resources>
 
     <ComboBox Name="DropBox" />
+
 </UserControl>

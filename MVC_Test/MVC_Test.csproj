@@ -58,7 +58,6 @@
     <Compile Include="customViews\dropBoxWithCategories\DropBoxWithCategories.xaml.cs">
       <DependentUpon>DropBoxWithCategories.xaml</DependentUpon>
     </Compile>
-    <Compile Include="customViews\dropBoxWithCategories\HntVisibleConverter.cs" />
     <Compile Include="model\DataBaseData.cs" />
     <Compile Include="model\DataManager.cs" />
     <Compile Include="model\RemoteData.cs" />

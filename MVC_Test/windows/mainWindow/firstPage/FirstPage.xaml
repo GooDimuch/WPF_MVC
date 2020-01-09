@@ -9,9 +9,14 @@
                    mc:Ignorable="d"
                    Title="FirstPage" Height="450" Width="800"
                    Loaded="FirstPage_OnLoaded">
+    <Page.Resources>
+    </Page.Resources>
+
     <Grid>
         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32">1</TextBlock>
-        <dbwc:DropBoxWithCategories x:Name="DropBox" Click="DropBox_OnMouseDown" Margin="10"
-                                    VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <StackPanel Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <dbwc:DropBoxWithCategories x:Name="DropBox" Click="DropBox_OnMouseDown"
+                                        VerticalAlignment="Top" HorizontalAlignment="Left" />
+        </StackPanel>
     </Grid>
 </basePage:BasePage>
