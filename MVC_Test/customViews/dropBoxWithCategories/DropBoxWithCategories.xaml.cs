@@ -1,49 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using MVC_Test.windows.mainWindow.firstPage;
 
 namespace MVC_Test.customViews.dropBoxWithCategories {
 	/// <summary>
 	/// Логика взаимодействия для DropBoxWithCategories.xaml
 	/// </summary>
-	public partial class DropBoxWithCategories : UserControl {
-		public const string xml = "<dropbox_models>" +
-															"		<dropbox_model name = \"model1\" title=\"\" >" +
-															"" +
-															"			<category title = \"Режим\" >" +
-															"				<category_item content=\"реж_1\" key=\"-0\" />" +
-															"				<category_item content=\"реж_2\" key=\"-1\" />" +
-															"				<category_item content=\"реж_3\" key=\"-2\" />" +
-															"			</category>" +
-															"" +
-															"			<category title = \"Погода\" >" +
-															"				<category_item content=\"ясно\" key=\"-0\" />" +
-															"				<category_item content=\"дождь\" key=\"-1\" />" +
-															"				<category_item content=\"снег\" key=\"-2\" />" +
-															"			</category>" +
-															"" +
-															"		</dropbox_model>" +
-															"</dropbox_models>";
-
+	public partial class DropBoxWithCategories : INotifyPropertyChanged {
 		public enum ItemType {
 			Category,
 			Item
 		}
 
-		private BaseDropBoxModel Model;
 		private BaseCategory SelectedCategory;
 		private bool isChanged;
 
+		private RoutedEventHandler _click;
+		public event RoutedEventHandler Click { add => _click += value; remove => _click -= value; }
+
+		public static DependencyProperty SourceProperty =
+			DependencyProperty.Register(nameof(Source), typeof(BaseDropBoxModel), typeof(DropBoxWithCategories));
+
+		public BaseDropBoxModel Source {
+			get => (BaseDropBoxModel) GetValue(SourceProperty);
+			set {
+				SetValue(SourceProperty, value);
+				DropBox.ItemsSource = Source.CategoryList;
+				UpdateTitle();
+			}
+		}
+
+		private string _title;
+
+		public string Title {
+			get => _title;
+			set {
+				_title = value;
+				OnPropertyChanged(nameof(Title));
+			}
+		}
+
+		public string KeyList {
+			get {
+				var sb = new StringBuilder();
+				Source.CategoryList.ForEach(category => sb.Append($"-{category.Name}={category.SelectedItem.Key} "));
+				return sb.ToString();
+			}
+		}
+
 		public DropBoxWithCategories() {
 			InitializeComponent();
-			Model = CreateDropBoxModel();
-			DropBox.ItemsSource = new List<DropBoxItem>(Model.CategoryList);
+			DataContext = this;
 		}
 
 		private void DropBoxWithCategories_OnLoaded(object sender, RoutedEventArgs e) {
@@ -51,20 +67,9 @@ namespace MVC_Test.customViews.dropBoxWithCategories {
 			DropBox.DropDownClosed += DropDownClosed;
 		}
 
-		private static BaseDropBoxModel CreateDropBoxModel() {
-			var item11 = new BaseCategoryItem("реж_1", "0");
-			var item12 = new BaseCategoryItem("реж_2", "1");
-			var item13 = new BaseCategoryItem("реж_3", "2");
-			var category1 = new BaseCategory("Режим", new List<BaseCategoryItem> {item11, item12, item13});
-			var item21 = new BaseCategoryItem("ясно", "0");
-			var item22 = new BaseCategoryItem("дождь", "1");
-			var item23 = new BaseCategoryItem("снег", "2");
-			var category2 = new BaseCategory("Погода", new List<BaseCategoryItem> {item21, item22, item23});
-			return new BaseDropBoxModel("model1", new List<BaseCategory> {category1, category2});
-		}
-
 		private void EventButton_OnClick(object sender, RoutedEventArgs e) {
-			Console.WriteLine($"{GetType().Name}.{MethodBase.GetCurrentMethod().Name}");
+			_click?.Invoke(this, e);
+			DropBox.IsDropDownOpen = false;
 		}
 
 		private void DropDownOpened(object sender, EventArgs e) { }
@@ -77,7 +82,7 @@ namespace MVC_Test.customViews.dropBoxWithCategories {
 		}
 
 		/// <summary>
-		/// Изначально берем вписок всех категорий. Потом определяем тип нажатого объекта. Если это категория, то проверяем
+		/// Изначально берем cписок всех категорий. Потом определяем тип нажатого объекта. Если это категория, то проверяем
 		/// открыта ли она сейчас, если открыта, то закрываем, а если закрыта, то берем у нее список всех дочерних объектов
 		/// и вставляем по (индексу категории + 1)
 		/// </summary>
@@ -89,7 +94,7 @@ namespace MVC_Test.customViews.dropBoxWithCategories {
 			if (!(sender is ComboBoxItem cbItem) || !cbItem.Content.GetType().IsSubclassOf(typeof(DropBoxItem))) { return; }
 			var item = cbItem.Content as DropBoxItem ?? throw new Exception("can't cast item to DropBoxItem");
 			//todo взять список категорий
-			var itemList = Model.CategoryList.Cast<DropBoxItem>().ToList();
+			var itemList = Source.CategoryList.Cast<DropBoxItem>().ToList();
 			BaseCategory category;
 			switch (item.Type) {
 				case ItemType.Category:
@@ -106,16 +111,31 @@ namespace MVC_Test.customViews.dropBoxWithCategories {
 					break;
 				case ItemType.Item:
 					//todo найти категорию выброного элемента
-					category = Model.CategoryList.ToList().Find(baseCategory => baseCategory.ItemList.Contains(item));
+					category = Source.CategoryList.ToList().Find(baseCategory => baseCategory.ItemList.Contains(item));
 					//todo указать в поле SelectedItem выбранный элемент
 					category.SelectedItem = item as BaseCategoryItem ?? throw new Exception("can't cast item to BaseCategory");
 					//todo очистить 
 					SelectedCategory = null;
+					//todo update title
+					UpdateTitle();
 					break;
 				default: throw new ArgumentOutOfRangeException();
 			}
 			//todo отобразить итоговый список элементов
 			DropBox.ItemsSource = itemList;
+		}
+
+		private void UpdateTitle() {
+			var sb = new StringBuilder();
+			Source?.CategoryList.ForEach(category => sb.Append($"{category.SelectedItem.Name}, "));
+			if (sb.Length > 2) sb.Remove(sb.Length - 2, 2);
+			Title = sb.ToString();
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		public void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 
@@ -133,19 +153,9 @@ namespace MVC_Test.customViews.dropBoxWithCategories {
 		public override string ToString() { return Title; }
 	}
 
-	public class BaseDropBoxModel {
-		public string Name;
-		public List<BaseCategory> CategoryList;
-
-		public BaseDropBoxModel(string name, List<BaseCategory> categoryList) {
-			Name = name;
-			CategoryList = categoryList;
-		}
-	}
-
 	public class BaseCategory : DropBoxItem {
-		public List<BaseCategoryItem> ItemList;
 		public string Name;
+		public List<BaseCategoryItem> ItemList;
 		private BaseCategoryItem _selectedItem;
 
 		public BaseCategoryItem SelectedItem {

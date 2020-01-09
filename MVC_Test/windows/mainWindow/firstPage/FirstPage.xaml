@@ -11,6 +11,7 @@
                    Loaded="FirstPage_OnLoaded">
     <Grid>
         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32">1</TextBlock>
-        <dbwc:DropBoxWithCategories Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <dbwc:DropBoxWithCategories x:Name="DropBox" Click="DropBox_OnMouseDown" Margin="10"
+                                    VerticalAlignment="Top" HorizontalAlignment="Left" />
     </Grid>
 </basePage:BasePage>
