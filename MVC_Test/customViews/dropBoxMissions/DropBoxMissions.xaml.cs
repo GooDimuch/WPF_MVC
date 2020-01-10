@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -7,27 +8,27 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using MVC_Test.windows.mainWindow.firstPage;
 
-namespace MVC_Test.customViews.dropBoxWithCategories {
+namespace MVC_Test.customViews.dropBoxMissions {
 	/// <summary>
-	/// Логика взаимодействия для DropBoxWithCategories.xaml
+	/// Логика взаимодействия для DropBoxMissions.xaml
 	/// </summary>
-	public partial class DropBoxWithCategories : INotifyPropertyChanged {
-		private BaseCategory SelectedCategory;
+	public partial class DropBoxMissions : INotifyPropertyChanged {
+		private MissionCategory SelectedCategory;
+		private Mission SelectedMission;
 		private bool isChanged;
 
 		private RoutedEventHandler _click;
 		public event RoutedEventHandler Click { add => _click += value; remove => _click -= value; }
 
 		public static DependencyProperty SourceProperty =
-			DependencyProperty.Register(nameof(Source), typeof(BaseDropBoxModel), typeof(DropBoxWithCategories));
+			DependencyProperty.Register(nameof(Source), typeof(DropBoxModel), typeof(DropBoxMissions));
 
-		internal BaseDropBoxModel Source {
-			get => (BaseDropBoxModel) GetValue(SourceProperty);
+		internal DropBoxModel Source {
+			get => (DropBoxModel) GetValue(SourceProperty);
 			set {
 				SetValue(SourceProperty, value);
-				DropBox.ItemsSource = Source.CategoryList;
+				DropBox.ItemsSource = Source.MissionList;
 				UpdateTitle();
 			}
 		}
@@ -45,17 +46,17 @@ namespace MVC_Test.customViews.dropBoxWithCategories {
 		public string KeyList {
 			get {
 				var sb = new StringBuilder();
-				Source.CategoryList.ForEach(category => sb.Append($"-{category.Name}={category.SelectedItem.Key} "));
+				SelectedMission.Model.CategoryList.ForEach(category => sb.Append($"-{category.Name}={category.SelectedItem.Name} "));
 				return sb.ToString();
 			}
 		}
 
-		public DropBoxWithCategories() {
+		public DropBoxMissions() {
 			InitializeComponent();
 			DataContext = this;
 		}
 
-		private void DropBoxWithCategories_OnLoaded(object sender, RoutedEventArgs e) {
+		private void DropBoxMissions_OnLoaded(object sender, RoutedEventArgs e) {
 			DropBox.DropDownOpened += DropDownOpened;
 			DropBox.DropDownClosed += DropDownClosed;
 		}
@@ -75,23 +76,31 @@ namespace MVC_Test.customViews.dropBoxWithCategories {
 		}
 
 		/// <summary>
-		/// Изначально берем cписок всех категорий. Потом определяем тип нажатого объекта. Если это категория, то проверяем
-		/// открыта ли она сейчас, если открыта, то закрываем, а если закрыта, то берем у нее список всех дочерних объектов
-		/// и вставляем по (индексу категории + 1)
+		/// 
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void EventSetter_OnHandler(object sender, MouseButtonEventArgs e) {
 			if (isChanged) { return; } else { isChanged = true; }
 			Console.WriteLine($"{GetType().Name}.{MethodBase.GetCurrentMethod().Name}");
-			if (!(sender is ComboBoxItem cbItem) || !cbItem.Content.GetType().IsSubclassOf(typeof(DropBoxItem))) { return; }
-			var item = cbItem.Content as DropBoxItem ?? throw new Exception("can't cast item to DropBoxItem");
+			if (!(sender is ComboBoxItem cbItem)) { return; }
+			var item = cbItem.Content as MissionDropBoxItem ?? throw new Exception("can't cast item to MissionDropBoxItem");
 			//todo взять список категорий
-			var itemList = Source.CategoryList.Cast<DropBoxItem>().ToList();
-			BaseCategory category;
+			List<MissionDropBoxItem> itemList = new List<MissionDropBoxItem>();
+			MissionCategory category;
 			switch (item.Type) {
+				case ItemType.Mission:
+					SelectedMission = item as Mission ?? throw new Exception("can't cast item to MissionCategory");
+					itemList.Add(new MissionDropBoxItem(ItemType.Back, "назад"));
+					itemList.AddRange(SelectedMission.Model.CategoryList);
+					break;
+				case ItemType.Back:
+					itemList.AddRange(Source.MissionList);
+					break;
 				case ItemType.Category:
-					category = item as BaseCategory ?? throw new Exception("can't cast item to BaseCategory");
+					itemList.Add(new MissionDropBoxItem(ItemType.Back, "назад"));
+					itemList.AddRange(SelectedMission.Model.CategoryList);
+					category = item as MissionCategory ?? throw new Exception("can't cast item to MissionCategory");
 					if (SelectedCategory?.Equals(category) ?? false) {
 						SelectedCategory = null;
 						break;
@@ -103,10 +112,14 @@ namespace MVC_Test.customViews.dropBoxWithCategories {
 					SelectedCategory = category;
 					break;
 				case ItemType.Item:
+					itemList.Add(new MissionDropBoxItem(ItemType.Back, "назад"));
+					itemList.AddRange(SelectedMission.Model.CategoryList);
 					//todo найти категорию выброного элемента
-					category = Source.CategoryList.ToList().Find(baseCategory => baseCategory.ItemList.Contains(item));
+					category = SelectedMission.Model.CategoryList.Find(missionCategory =>
+																															missionCategory.ItemList.Contains(item));
 					//todo указать в поле SelectedItem выбранный элемент
-					category.SelectedItem = item as BaseCategoryItem ?? throw new Exception("can't cast item to BaseCategory");
+					category.SelectedItem =
+						item as MissionCategoryItem ?? throw new Exception("can't cast item to MissionCategory");
 					//todo очистить 
 					SelectedCategory = null;
 					//todo update title
@@ -120,9 +133,23 @@ namespace MVC_Test.customViews.dropBoxWithCategories {
 
 		private void UpdateTitle() {
 			var sb = new StringBuilder();
-			Source?.CategoryList.ForEach(category => sb.Append($"{category.SelectedItem.Name}, "));
+			if (SelectedMission == null && Source != null && Source.MissionList.Count > 0) {
+				SelectedMission = Source.MissionList[0];
+			}
+			sb.Append($"{SelectedMission?.Name}[");
+			SelectedMission?.Model.CategoryList.ForEach(category => sb.Append($"{category.SelectedItem.Name}, "));
 			if (sb.Length > 2) sb.Remove(sb.Length - 2, 2);
-			Title = sb.ToString();
+			Title = sb.Append("]").ToString();
+		}
+
+		private void ToolTip_OnOpened(object sender, RoutedEventArgs e) {
+			TbMissionName.Text = SelectedMission.Name;
+			var titles = "";
+			var values = "";
+			SelectedMission.Model.CategoryList.ForEach(category => titles += $"{category.Name}\n");
+			SelectedMission.Model.CategoryList.ForEach(category => values += $"{category.SelectedItem.Name}\n");
+			TbTitle.Text = titles;
+			TbContent.Text = values;
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -130,5 +157,7 @@ namespace MVC_Test.customViews.dropBoxWithCategories {
 		public void OnPropertyChanged([CallerMemberName] string propertyName = null) {
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
+
+		private void ToggleButton_OnClick(object sender, RoutedEventArgs e) { DropBox.ItemsSource = Source.MissionList; }
 	}
 }

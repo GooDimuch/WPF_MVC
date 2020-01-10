@@ -55,9 +55,24 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="customViews\dropBoxMissions\MissionCategory.cs" />
+    <Compile Include="customViews\dropBoxMissions\MissionCategoryItem.cs" />
+    <Compile Include="customViews\dropBoxMissions\MissionDropBoxModel.cs" />
+    <Compile Include="customViews\dropBoxMissions\DropBoxModel.cs" />
+    <Compile Include="customViews\dropBoxMissions\MissionDropBoxItem.cs" />
+    <Compile Include="customViews\dropBoxMissions\DropBoxMissions.xaml.cs">
+      <DependentUpon>DropBoxMissions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="customViews\dropBoxMissions\ItemType.cs" />
+    <Compile Include="customViews\dropBoxMissions\Mission.cs" />
+    <Compile Include="customViews\dropBoxWithCategories\BaseCategory.cs" />
+    <Compile Include="customViews\dropBoxWithCategories\BaseCategoryItem.cs" />
+    <Compile Include="customViews\dropBoxWithCategories\BaseDropBoxModel.cs" />
+    <Compile Include="customViews\dropBoxWithCategories\DropBoxItem.cs" />
     <Compile Include="customViews\dropBoxWithCategories\DropBoxWithCategories.xaml.cs">
       <DependentUpon>DropBoxWithCategories.xaml</DependentUpon>
     </Compile>
+    <Compile Include="customViews\dropBoxWithCategories\ItemType.cs" />
     <Compile Include="model\DataBaseData.cs" />
     <Compile Include="model\DataManager.cs" />
     <Compile Include="model\RemoteData.cs" />
@@ -95,6 +110,10 @@
       <DependentUpon>ThirdPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="windows\secondaryWindow\thirdPage\ThirdPageController.cs" />
+    <Page Include="customViews\dropBoxMissions\DropBoxMissions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="customViews\dropBoxWithCategories\DropBoxWithCategories.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
